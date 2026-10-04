@@ -686,10 +686,25 @@ def receptor_assessment(findings: List[Dict[str, str]], manual_oprm1: str) -> Tu
 
     for f in findings:
         if f["gene"] == "OPRM1" and f["rsID"] == "rs1799971":
+            gt = str(f.get("genotype", "")).strip()
+
+            if gt in {"0/1", "1/1"}:
+                return (
+                    "Variant-level receptor finding",
+                    "OPRM1 A118G detected. Do not convert this finding into a universal 'high sensitivity' or overdose label without drug-specific validated evidence."
+                )
+
+            if gt == "0/0":
+                return (
+                    "No actionable receptor finding",
+                    "OPRM1 rs1799971 is reference (0/0); the mapped alternate allele was not detected."
+                )
+
             return (
-                "Variant-level receptor finding",
-                "OPRM1 A118G detected. Do not convert this finding into a universal 'high sensitivity' or overdose label without drug-specific validated evidence."
+                "Receptor finding requires review",
+                "OPRM1 rs1799971 was detected, but the genotype is not interpretable by the current biallelic rule set."
             )
+
     return (
         "No actionable receptor finding",
         "No supported OPRM1 finding was identified in the current input."
